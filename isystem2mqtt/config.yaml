@@ -26,11 +26,11 @@ schema:
   mqtt_port: int
   mqtt_user: str
   mqtt_password: str
-  model: "modulens-o|modulens-g"
+  model: list(modulens-o|modulens-g)
   interval: int
   serial: str
   device_id: int
-  log_level: "DEBUG|INFO|WARNING|ERROR"
+  log_level: list(DEBUG|INFO|WARNING|ERROR)
 
 devices:
   - /dev/ttyUSB0
