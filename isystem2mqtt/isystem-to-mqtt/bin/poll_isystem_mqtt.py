@@ -7,6 +7,7 @@ from __future__ import print_function
 
 import argparse
 import logging
+import sys
 import time
 
 try:
@@ -110,20 +111,37 @@ instrument = isystem_to_mqtt.isystem_modbus.ISystemInstrument(args.serial,
 instrument.debug = False   # True or False
 
 
+RETRY_DELAYS = [5, 15, 30]
+
+
 def read_zone(base_address, number_of_value):
     """ Read a MODBUS table zone and send the value to MQTT. """
-    try:
-        raw_values = instrument.read_registers(base_address, number_of_value)
-    except EnvironmentError:
-        logging.exception("I/O error")
-    except ValueError:
-        logging.exception("Value error")
-    else:
-        for index in range(0, number_of_value):
-            address = base_address + index
-            tag_definition = READ_TABLE.get(address)
-            if tag_definition:
-                tag_definition.publish(client, base_topic, raw_values, index)
+    for attempt, delay in enumerate([0] + RETRY_DELAYS):
+        if delay:
+            _LOGGER.warning("No response from instrument, retrying in %ds (attempt %d/%d)...",
+                            delay, attempt, len(RETRY_DELAYS))
+            time.sleep(delay)
+        try:
+            raw_values = instrument.read_registers(base_address, number_of_value)
+        except minimalmodbus.NoResponseError:
+            logging.exception("I/O error")
+            if attempt == len(RETRY_DELAYS):
+                _LOGGER.error("All %d retries failed. Exiting.", len(RETRY_DELAYS))
+                sys.exit(1)
+            continue
+        except EnvironmentError:
+            logging.exception("I/O error")
+            return
+        except ValueError:
+            logging.exception("Value error")
+            return
+        else:
+            for index in range(0, number_of_value):
+                address = base_address + index
+                tag_definition = READ_TABLE.get(address)
+                if tag_definition:
+                    tag_definition.publish(client, base_topic, raw_values, index)
+            return
 
 def write_value(message):
     """ Write a value receive from MQTT to MODBUS """

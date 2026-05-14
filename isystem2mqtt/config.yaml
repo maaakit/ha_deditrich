@@ -1,6 +1,6 @@
 name: "iSystem to MQTT"
 description: "Bridges iSystem/Deditrich boiler (Modbus RS485 via USB) to MQTT broker"
-version: "0.1.0"
+version: "0.1.1"
 slug: "isystem2mqtt"
 url: "https://github.com/maaakit/ha_deditrich/tree/main/isystem2mqtt"
 init: false
