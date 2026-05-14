@@ -1,0 +1,41 @@
+name: "iSystem to MQTT"
+description: "Bridges iSystem/Deditrich boiler (Modbus RS485 via USB) to MQTT broker"
+version: "0.1.0"
+slug: "isystem2mqtt"
+url: "https://github.com/markitsoft/ha_deditrich/tree/main/isystem2mqtt"
+init: false
+homeassistant_api: false
+hassio_api: false
+
+arch:
+  - aarch64
+  - armv7
+  - amd64
+
+options:
+  mqtt_host: "core-mosquitto"
+  mqtt_port: 1883
+  mqtt_user: "homeassistant"
+  mqtt_password: ""
+  model: "modulens-g"
+  interval: 15
+  serial: "/dev/ttyUSB0"
+  device_id: 10
+  log_level: "INFO"
+
+schema:
+  mqtt_host: str
+  mqtt_port: int
+  mqtt_user: str
+  mqtt_password: str
+  model: "modulens-o|modulens-g"
+  interval: int
+  serial: str
+  device_id: int
+  log_level: "DEBUG|INFO|WARNING|ERROR"
+
+devices:
+  - /dev/ttyUSB0
+
+privileged:
+  - SYS_RAWIO
