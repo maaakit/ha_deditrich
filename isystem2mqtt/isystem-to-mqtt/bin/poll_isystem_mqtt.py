@@ -7,7 +7,6 @@ from __future__ import print_function
 
 import argparse
 import logging
-import sys
 import time
 
 try:
@@ -55,7 +54,9 @@ args = parser.parse_args()
 numeric_level = getattr(logging, args.log.upper(), None)
 if not isinstance(numeric_level, int):
     raise ValueError("Invalid log level: {0}".format(args.log))
-logging.basicConfig(level=numeric_level)
+logging.basicConfig(level=numeric_level,
+                    format="%(asctime)s.%(msecs)03d %(levelname)s %(name)s %(message)s",
+                    datefmt="%H:%M:%S")
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -111,29 +112,29 @@ instrument = isystem_to_mqtt.isystem_modbus.ISystemInstrument(args.serial,
 instrument.debug = False   # True or False
 
 
-RETRY_DELAYS = [5, 15, 30]
+RETRY_COUNT = 3
+RETRY_DELAY = 1
 
 
 def read_zone(base_address, number_of_value):
     """ Read a MODBUS table zone and send the value to MQTT. """
-    for attempt, delay in enumerate([0] + RETRY_DELAYS):
-        if delay:
-            _LOGGER.warning("No response from instrument, retrying in %ds (attempt %d/%d)...",
-                            delay, attempt, len(RETRY_DELAYS))
-            time.sleep(delay)
+    for attempt in range(RETRY_COUNT + 1):
         try:
             raw_values = instrument.read_registers(base_address, number_of_value)
         except minimalmodbus.NoResponseError:
-            logging.exception("I/O error")
-            if attempt == len(RETRY_DELAYS):
-                _LOGGER.error("All %d retries failed. Exiting.", len(RETRY_DELAYS))
-                sys.exit(1)
-            continue
+            if attempt < RETRY_COUNT:
+                _LOGGER.error("I/O error reading modbus registers, retrying in %ds (attempt %d/%d)...",
+                              RETRY_DELAY, attempt + 1, RETRY_COUNT, exc_info=True)
+                time.sleep(RETRY_DELAY)
+                continue
+            _LOGGER.error("I/O error reading modbus registers after %d retries, skipping cycle.",
+                          RETRY_COUNT, exc_info=True)
+            return
         except EnvironmentError:
-            logging.exception("I/O error")
+            _LOGGER.error("I/O error", exc_info=True)
             return
         except ValueError:
-            logging.exception("Value error")
+            _LOGGER.error("Value error", exc_info=True)
             return
         else:
             for index in range(0, number_of_value):

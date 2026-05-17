@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2] - 2026-05-17
+
+### Changed
+- Improved error handling for Modbus I/O errors: log at ERROR level, retry up to 3 times with 1s delay, then continue to next cycle instead of exiting
+- Added DEBUG log on MQTT publish (only when value changes)
+- Log format now includes timestamp (HH:MM:SS.mmm)
+
 ## [0.1.0] - 2026-05-14
 
 ### Added

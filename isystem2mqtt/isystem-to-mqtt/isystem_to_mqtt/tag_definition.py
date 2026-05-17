@@ -22,6 +22,7 @@ class TagDefinition(object):
         value = self.convertion(raw_values, index)
         _LOGGER.debug("value %s  = %s", self.tag_name, value)
         if value != self.last_value:
+            _LOGGER.debug("publish %s = %s", base_topic + self.tag_name, value)
             client.publish(base_topic + self.tag_name, value, retain=True)
             self.last_value = value
 
@@ -45,6 +46,7 @@ class MultipleTagDefinition(object):
             value = convertion(raw_values, index)
             _LOGGER.debug("value %s  = %s", tag_name, value)
             if value != self.last_value[i]:
+                _LOGGER.debug("publish %s = %s", base_topic + tag_name, value)
                 client.publish(base_topic + tag_name, value, retain=True)
                 self.last_value[i] = value
             i += 1
