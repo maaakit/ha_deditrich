@@ -6,6 +6,7 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import json
 import logging
 import time
 
@@ -66,6 +67,7 @@ _LOGGER = logging.getLogger(__name__)
 
 # Initialisation of mqtt client
 base_topic = "heating/"
+diagnostic_write_topic = base_topic + "diagnostic/write"
 
 port_mqtt = 1883
 client = mqtt.Client()
@@ -92,6 +94,7 @@ def on_message(the_client, userdata, message):
 client.on_message = on_message
 
 subscribe_list = [(base_topic + name, 0) for name in WRITE_TABLE.keys()]
+subscribe_list.append((diagnostic_write_topic, 0))
 
 def on_connect(the_client, userdata, flags, rc):
     _LOGGER.debug("ON CONNECT")
@@ -146,7 +149,8 @@ def read_zone(base_address, number_of_value):
 
 def write_value(message):
     """ Write a value receive from MQTT to MODBUS """
-    tag_definition = WRITE_TABLE.get(message.topic.strip(base_topic))
+    topic_name = message.topic[len(base_topic):] if message.topic.startswith(base_topic) else message.topic
+    tag_definition = WRITE_TABLE.get(topic_name)
     if tag_definition:
         string_value = message.payload.decode("utf-8")
         value = tag_definition.convertion(string_value)
@@ -155,6 +159,33 @@ def write_value(message):
                       tag_definition.address, value)
         if value is not None:
             instrument.write_registers(tag_definition.address, value)
+
+
+def write_diagnostic_value(message):
+    """Write an arbitrary single Modbus register from diagnostic JSON."""
+    try:
+        payload = json.loads(message.payload.decode("utf-8"))
+        address = payload["adr"]
+        value = payload["val"]
+        if isinstance(address, bool) or not isinstance(address, int):
+            raise ValueError("adr must be an integer")
+        if isinstance(value, int) and not isinstance(value, bool):
+            values = [value]
+        elif isinstance(value, list) and value:
+            values = value
+        else:
+            raise ValueError("val must be an integer or a non-empty array of integers")
+        if any(isinstance(item, bool) or not isinstance(item, int) or
+               not 0 <= item <= 0xFFFF for item in values):
+            raise ValueError("val items must be integers between 0 and 65535")
+        if not 0 <= address <= 0xFFFF or address + len(values) - 1 > 0xFFFF:
+            raise ValueError("register range must be between 0 and 65535")
+    except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError, ValueError) as error:
+        _LOGGER.warning("Invalid diagnostic write payload: %s (%s)", message.payload, error)
+        return
+
+    _LOGGER.warning("Diagnostic write: address %d = %s", address, values)
+    instrument.write_registers(address, values)
 
 
 instrument.wait_time_slot()
@@ -183,10 +214,12 @@ while True:
             writeelement = write_queue.get(timeout=waittime)
 
             instrument.wait_time_slot()
-            write_value(writeelement)
+            if writeelement.topic == diagnostic_write_topic:
+                write_diagnostic_value(writeelement)
+            else:
+                write_value(writeelement)
             waittime = 0
     except queue.Empty:
         # no more write, continue to read.
         instrument.wait_time_slot()
         continue
-

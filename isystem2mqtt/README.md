@@ -40,6 +40,19 @@ Data is published under the `heating/` topic prefix. Examples:
 - `heating/zone-a/mode`
 - `heating/reading` — watchdog: `ON` when running, `OFF` on disconnect
 
+For diagnostic writes, publish a non-retained JSON message to
+`heating/diagnostic/write`, for example:
+
+```json
+{"adr": 650, "val": 210}
+```
+
+`adr` must be an integer from 0 to 65535. `val` can be one integer or an
+array of integers, for example `{"adr": 650, "val": [210, 220, 230]}`;
+the array is written to consecutive Modbus registers. All values must be
+between 0 and 65535. This topic bypasses the normal named-register
+validation; use it only for testing and with care.
+
 ## Credits
 
 Based on [isystem-to-mqtt](https://github.com/ngraziano/isystem-to-mqtt) by Nicolas Graziano.
