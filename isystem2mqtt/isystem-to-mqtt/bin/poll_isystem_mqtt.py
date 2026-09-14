@@ -20,6 +20,7 @@ import paho.mqtt.client as mqtt
 
 import isystem_to_mqtt.tables
 import isystem_to_mqtt.isystem_modbus
+import isystem_to_mqtt.mqtt_discovery
 
 parser = argparse.ArgumentParser()
 parser.add_argument("server", help="MQtt server to connect to.")
@@ -100,6 +101,13 @@ def on_connect(the_client, userdata, flags, rc):
     _LOGGER.debug("ON CONNECT")
     if rc == mqtt.CONNACK_ACCEPTED:
         the_client.subscribe(subscribe_list)
+        for discovery_topic, discovery_payload in (
+                isystem_to_mqtt.mqtt_discovery.temperature_number_configs(
+                    base_topic, args.model)):
+            result = the_client.publish(discovery_topic, discovery_payload, 1, True)
+            if result.rc != mqtt.MQTT_ERR_SUCCESS:
+                _LOGGER.warning("Failed to publish MQTT Discovery config to %s: %s",
+                                discovery_topic, result.rc)
         client.publish(base_topic + "reading", "ON", 1, True)
 
 client.on_connect = on_connect

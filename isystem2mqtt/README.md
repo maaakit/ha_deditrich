@@ -42,6 +42,10 @@ Data is published under the `heating/` topic prefix. Examples:
 - `heating/dhw/night-temperature/SET` — set DHW night target temperature
 - `heating/reading` — watchdog: `ON` when running, `OFF` on disconnect
 
+The add-on also publishes Home Assistant MQTT Discovery configurations for
+slider entities controlling the day and night target temperatures of zone A,
+zone B and DHW.
+
 For diagnostic writes, publish a non-retained JSON message to
 `heating/diagnostic/write`, for example:
 

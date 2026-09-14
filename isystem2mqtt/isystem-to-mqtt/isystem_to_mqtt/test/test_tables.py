@@ -4,6 +4,7 @@ import unittest
 
 from .. import tables
 from .. import convert
+from .. import mqtt_discovery
 
 
 def not_to_be_trantlate(value):
@@ -78,5 +79,24 @@ class TestGetTablesTranslated(unittest.TestCase):
             for topic, address in expected_topics.items():
                 self.assertEqual(write_table[topic].address, address)
                 self.assertEqual(write_table[topic].convertion, convert.write_tenth)
+
+    def test_temperature_number_discovery_configs(self):
+        """ Test Home Assistant slider discovery configuration """
+        configs = mqtt_discovery.temperature_number_configs("heating/", "modulens-o")
+
+        self.assertEqual(len(configs), 6)
+        discovery_topics = [topic for topic, _ in configs]
+        self.assertIn(
+            "homeassistant/number/isystem2mqtt_dhw_day_temperature/config",
+            discovery_topics)
+        self.assertIn(
+            "homeassistant/number/isystem2mqtt_zone_a_day_temperature/config",
+            discovery_topics)
+
+    def test_dhw_target_registers_are_polled(self):
+        """ Test DHW target registers are included in both read tables """
+        for model in ("modulens-o", "modulens-g"):
+            _, _, zones = tables.get_tables(model)
+            self.assertIn((672, 3), zones)
 
     
