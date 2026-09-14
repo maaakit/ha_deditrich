@@ -101,9 +101,12 @@ def on_connect(the_client, userdata, flags, rc):
     _LOGGER.debug("ON CONNECT")
     if rc == mqtt.CONNACK_ACCEPTED:
         the_client.subscribe(subscribe_list)
-        for discovery_topic, discovery_payload in (
-                isystem_to_mqtt.mqtt_discovery.temperature_number_configs(
-                    base_topic, args.model)):
+        discovery_configs = (
+            isystem_to_mqtt.mqtt_discovery.temperature_number_configs(
+                base_topic, args.model)
+            + isystem_to_mqtt.mqtt_discovery.program_select_configs(
+                base_topic, args.model))
+        for discovery_topic, discovery_payload in discovery_configs:
             result = the_client.publish(discovery_topic, discovery_payload, 1, True)
             if result.rc != mqtt.MQTT_ERR_SUCCESS:
                 _LOGGER.warning("Failed to publish MQTT Discovery config to %s: %s",

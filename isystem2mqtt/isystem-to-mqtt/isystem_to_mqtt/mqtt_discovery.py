@@ -20,10 +20,10 @@ def temperature_number_configs(base_topic, model):
          "zone-b/night-target-temperature/SET", 15, 25),
         ("dhw_day", "DHW day temperature",
          "dhw/day-target-temperature",
-         "dhw/day-temperature/SET", 20, 60),
+         "dhw/day-temperature/SET", 40, 60),
         ("dhw_night", "DHW night temperature",
          "dhw/night-target-temperature",
-         "dhw/night-temperature/SET", 20, 60),
+         "dhw/night-temperature/SET", 40, 60),
     )
     device = {
         "identifiers": ["isystem2mqtt"],
@@ -52,5 +52,39 @@ def temperature_number_configs(base_topic, model):
             "device": device,
         }
         discovery_topic = "homeassistant/number/{}/config".format(unique_id)
+        configs.append((discovery_topic, json.dumps(payload)))
+    return configs
+
+
+def program_select_configs(base_topic, model):
+    """Return MQTT Discovery configs for zone program selectors."""
+    definitions = (
+        ("zone_a", "Zone A program", "zone-a/program"),
+        ("zone_b", "Zone B program", "zone-b/program"),
+    )
+    device = {
+        "identifiers": ["isystem2mqtt"],
+        "name": "iSystem / DeDietrich",
+        "manufacturer": "DeDietrich",
+        "model": model,
+    }
+    configs = []
+    for zone_id, name, state_suffix in definitions:
+        unique_id = "isystem2mqtt_{}_program".format(zone_id)
+        payload = {
+            "name": name,
+            "unique_id": unique_id,
+            "command_topic": base_topic + state_suffix + "/SET",
+            "state_topic": base_topic + state_suffix,
+            "availability_topic": base_topic + "reading",
+            "payload_available": "ON",
+            "payload_not_available": "OFF",
+            "options": ["P1", "P2", "P3", "P4"],
+            "command_template": "{{ ['P1', 'P2', 'P3', 'P4'].index(value) }}",
+            "value_template": "P{{ value | int + 1 }}",
+            "retain": False,
+            "device": device,
+        }
+        discovery_topic = "homeassistant/select/{}/config".format(unique_id)
         configs.append((discovery_topic, json.dumps(payload)))
     return configs

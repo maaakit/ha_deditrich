@@ -93,6 +93,19 @@ class TestGetTablesTranslated(unittest.TestCase):
             "homeassistant/number/isystem2mqtt_zone_a_day_temperature/config",
             discovery_topics)
 
+    def test_program_select_discovery_configs(self):
+        """ Test Home Assistant program selector discovery configuration """
+        configs = mqtt_discovery.program_select_configs("heating/", "modulens-g")
+
+        self.assertEqual(len(configs), 2)
+        discovery_topics = [topic for topic, _ in configs]
+        self.assertEqual(
+            discovery_topics,
+            [
+                "homeassistant/select/isystem2mqtt_zone_a_program/config",
+                "homeassistant/select/isystem2mqtt_zone_b_program/config",
+            ])
+
     def test_dhw_target_registers_are_polled(self):
         """ Test DHW target registers are included in both read tables """
         for model in ("modulens-o", "modulens-g"):

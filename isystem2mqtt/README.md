@@ -44,7 +44,9 @@ Data is published under the `heating/` topic prefix. Examples:
 
 The add-on also publishes Home Assistant MQTT Discovery configurations for
 slider entities controlling the day and night target temperatures of zone A,
-zone B and DHW.
+zone B and DHW, plus `select` entities for choosing programs P1 through P4
+for zone A and zone B. The program selectors use the existing
+`heating/zone-a/program/SET` and `heating/zone-b/program/SET` topics.
 
 For diagnostic writes, publish a non-retained JSON message to
 `heating/diagnostic/write`, for example:
