@@ -337,6 +337,8 @@ WRITE_TABLE_MODULENS_O = {
 
     "zone-b/temperature/SET": WriteTagDefinition(27, convert.write_tenth),
     "zone-a/temperature/SET": WriteTagDefinition(18, convert.write_tenth),
+    "dhw/day-temperature/SET": WriteTagDefinition(672, convert.write_tenth),
+    "dhw/night-temperature/SET": WriteTagDefinition(673, convert.write_tenth),
     "boiler/active-mode/SET": WriteTagDefinition(644, convert.write_unit),
 }
 
@@ -384,5 +386,7 @@ WRITE_TABLE_MODULENS_G = {
     "zone-b/temperature/SET": WriteTagDefinition(616, convert.write_tenth),
 
     "zone-a/temperature/SET": WriteTagDefinition(614, convert.write_tenth),
+    "dhw/day-temperature/SET": WriteTagDefinition(672, convert.write_tenth),
+    "dhw/night-temperature/SET": WriteTagDefinition(673, convert.write_tenth),
     
 }

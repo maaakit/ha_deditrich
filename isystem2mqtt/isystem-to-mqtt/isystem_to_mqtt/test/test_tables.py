@@ -66,4 +66,17 @@ class TestGetTablesTranslated(unittest.TestCase):
         self.assertEqual(mode_def.definition_list[0][1],convert.derog_bit_english)
         self.assertEqual(mode_def.definition_list[2][1],convert.derog_bit_simple_english)
 
+    def test_dhw_temperature_write_topics(self):
+        """ Test DHW temperature write topics for both boiler models """
+        expected_topics = {
+            "dhw/day-temperature/SET": 672,
+            "dhw/night-temperature/SET": 673,
+        }
+
+        for model in ("modulens-o", "modulens-g"):
+            _, write_table, _ = tables.get_tables_translated(model, "en")
+            for topic, address in expected_topics.items():
+                self.assertEqual(write_table[topic].address, address)
+                self.assertEqual(write_table[topic].convertion, convert.write_tenth)
+
     

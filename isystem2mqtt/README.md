@@ -38,6 +38,8 @@ Data is published under the `heating/` topic prefix. Examples:
 - `heating/outside/temperature`
 - `heating/zone-a/temperature`
 - `heating/zone-a/mode`
+- `heating/dhw/day-temperature/SET` — set DHW day target temperature
+- `heating/dhw/night-temperature/SET` — set DHW night target temperature
 - `heating/reading` — watchdog: `ON` when running, `OFF` on disconnect
 
 For diagnostic writes, publish a non-retained JSON message to
