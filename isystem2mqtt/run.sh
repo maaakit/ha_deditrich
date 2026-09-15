@@ -13,6 +13,7 @@ INTERVAL=$(bashio::config 'interval')
 SERIAL=$(bashio::config 'serial')
 DEVICE_ID=$(bashio::config 'device_id')
 LOG_LEVEL=$(bashio::config 'log_level')
+CUSTOM_CSS_FILE=$(bashio::config 'custom_css_file')
 
 bashio::log.info "Starting iSystem2MQTT..."
 bashio::log.info "MQTT broker: ${MQTT_HOST}:${MQTT_PORT}"
@@ -26,4 +27,5 @@ exec python3 /isystem-to-mqtt/bin/poll_isystem_mqtt.py \
     --model "${MODEL}" \
     --serial "${SERIAL}" \
     --deviceid "${DEVICE_ID}" \
+    --custom-css-file "${CUSTOM_CSS_FILE}" \
     "${MQTT_HOST}"

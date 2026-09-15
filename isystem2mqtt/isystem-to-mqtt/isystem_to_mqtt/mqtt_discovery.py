@@ -88,3 +88,34 @@ def program_select_configs(base_topic, model):
         discovery_topic = "homeassistant/select/{}/config".format(unique_id)
         configs.append((discovery_topic, json.dumps(payload)))
     return configs
+
+
+def program_image_configs(base_topic, model):
+    """Return MQTT Discovery configs for active program images."""
+    definitions = (
+        ("zone_a", "Zone A active program", "zone-a/program/image"),
+        ("zone_b", "Zone B active program", "zone-b/program/image"),
+        ("zone_c", "Zone C active program", "zone-c/program/image"),
+    )
+    device = {
+        "identifiers": ["isystem2mqtt"],
+        "name": "iSystem / DeDietrich",
+        "manufacturer": "DeDietrich",
+        "model": model,
+    }
+    configs = []
+    for entity_id, name, image_suffix in definitions:
+        unique_id = "isystem2mqtt_{}_program_image".format(entity_id)
+        payload = {
+            "name": name,
+            "unique_id": unique_id,
+            "image_topic": base_topic + image_suffix,
+            "content_type": "image/svg+xml",
+            "availability_topic": base_topic + "reading",
+            "payload_available": "ON",
+            "payload_not_available": "OFF",
+            "device": device,
+        }
+        discovery_topic = "homeassistant/image/{}/config".format(unique_id)
+        configs.append((discovery_topic, json.dumps(payload)))
+    return configs

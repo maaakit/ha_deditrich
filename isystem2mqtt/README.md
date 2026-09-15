@@ -30,6 +30,34 @@ Communication with the boiler uses **Modbus RS485** via a USB-RS485 adapter (e.g
 | `serial` | `/dev/ttyUSB0` | Serial device path |
 | `device_id` | `10` | Modbus device ID |
 | `log_level` | `INFO` | Log level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+| `custom_css_file` | `` | Optional CSS file used to style generated program SVG images |
+
+The optional `custom_css_file` path is read from the Home Assistant `/config`
+directory, for example `/config/isystem2mqtt/program.css`. The file is
+embedded into generated SVG images. Only the documented renderer classes
+should be customized:
+
+```css
+.program-background {
+  fill: #101820;
+}
+
+.program-grid {
+  stroke: #38434d;
+}
+
+.program-period {
+  fill: #ff9800;
+}
+
+.program-day-label,
+.program-time-label {
+  fill: #ffffff;
+}
+```
+
+The CSS file must contain styles only. JavaScript, external resources,
+`@import`, and `url(...)` are not supported.
 
 ## MQTT Topics
 
@@ -47,6 +75,17 @@ slider entities controlling the day and night target temperatures of zone A,
 zone B and DHW, plus `select` entities for choosing programs P1 through P4
 for zone A and zone B. The program selectors use the existing
 `heating/zone-a/program/SET` and `heating/zone-b/program/SET` topics.
+
+The add-on also publishes three `image` entities containing the currently
+active schedule for zones A, B and C:
+
+```text
+heating/zone-a/program/image
+heating/zone-b/program/image
+heating/zone-c/program/image
+```
+
+The images are regenerated when the corresponding active schedule changes.
 
 For diagnostic writes, publish a non-retained JSON message to
 `heating/diagnostic/write`, for example:

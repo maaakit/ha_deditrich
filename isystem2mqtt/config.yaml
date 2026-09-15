@@ -1,6 +1,6 @@
 name: "iSystem to MQTT"
 description: "Bridges iSystem/Deditrich boiler (Modbus RS485 via USB) to MQTT broker"
-version: "0.1.6"
+version: "0.1.7"
 slug: "isystem2mqtt"
 url: "https://github.com/maaakit/ha_deditrich/tree/main/isystem2mqtt"
 init: false
@@ -20,6 +20,7 @@ options:
   serial: "/dev/ttyUSB0"
   device_id: 10
   log_level: "INFO"
+  custom_css_file: ""
 
 schema:
   mqtt_host: str
@@ -31,6 +32,10 @@ schema:
   serial: str
   device_id: int
   log_level: list(DEBUG|INFO|WARNING|ERROR)
+  custom_css_file: str
+
+map:
+  - "config:ro"
 
 devices:
   - /dev/ttyUSB0

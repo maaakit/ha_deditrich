@@ -60,6 +60,7 @@ def get_tables_translated(model, lang):
 # First value modbus adress
 # Second value number of word
 ZONE_TABLE_MODULENS_O = [(231, 20),
+                         (126, 105),
                          (507, 4),
                          (471, 10),
                          (600, 21),
@@ -348,6 +349,7 @@ ZONE_TABLE_MODULENS_G = [(3,  3),
                          (96,  1),
                          (102,  1),
                          (108,  3),
+                         (126, 105),
                          (231, 20),
                          (263,  1),
                          (309, 20),

@@ -106,10 +106,30 @@ class TestGetTablesTranslated(unittest.TestCase):
                 "homeassistant/select/isystem2mqtt_zone_b_program/config",
             ])
 
+    def test_program_image_discovery_configs(self):
+        """ Test Home Assistant active program image discovery configuration """
+        configs = mqtt_discovery.program_image_configs("heating/", "modulens-g")
+
+        self.assertEqual(len(configs), 3)
+        discovery_topics = [topic for topic, _ in configs]
+        self.assertEqual(
+            discovery_topics,
+            [
+                "homeassistant/image/isystem2mqtt_zone_a_program_image/config",
+                "homeassistant/image/isystem2mqtt_zone_b_program_image/config",
+                "homeassistant/image/isystem2mqtt_zone_c_program_image/config",
+            ])
+
     def test_dhw_target_registers_are_polled(self):
         """ Test DHW target registers are included in both read tables """
         for model in ("modulens-o", "modulens-g"):
             _, _, zones = tables.get_tables(model)
             self.assertIn((672, 3), zones)
+
+    def test_active_program_schedules_are_polled(self):
+        """ Test active A-C and DHW schedule registers are polled """
+        for model in ("modulens-o", "modulens-g"):
+            _, _, zones = tables.get_tables(model)
+            self.assertIn((126, 105), zones)
 
     

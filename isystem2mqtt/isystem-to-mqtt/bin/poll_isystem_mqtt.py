@@ -21,6 +21,7 @@ import paho.mqtt.client as mqtt
 import isystem_to_mqtt.tables
 import isystem_to_mqtt.isystem_modbus
 import isystem_to_mqtt.mqtt_discovery
+import isystem_to_mqtt.program_visualization
 
 parser = argparse.ArgumentParser()
 parser.add_argument("server", help="MQtt server to connect to.")
@@ -41,6 +42,9 @@ parser.add_argument("--model", help="boiler model",
                     default="modulens-o")
 parser.add_argument("--lang", help="language in mqtt message",
                     default="en")
+parser.add_argument("--custom-css-file",
+                    help="optional CSS file for program SVG images",
+                    default="")
 # handle no sll.PROTOCOL_TLSv1_2
 try:
     import ssl
@@ -64,6 +68,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 (READ_TABLE, WRITE_TABLE, READ_ZONES) = isystem_to_mqtt.tables.get_tables_translated(args.model, args.lang)
+custom_css = isystem_to_mqtt.program_visualization.load_custom_css(
+    args.custom_css_file)
 
 
 # Initialisation of mqtt client
@@ -97,6 +103,13 @@ client.on_message = on_message
 subscribe_list = [(base_topic + name, 0) for name in WRITE_TABLE.keys()]
 subscribe_list.append((diagnostic_write_topic, 0))
 
+program_image_definitions = {
+    126: ("zone-a", "Zone A"),
+    147: ("zone-b", "Zone B"),
+    168: ("zone-c", "Zone C"),
+}
+last_program_images = {}
+
 def on_connect(the_client, userdata, flags, rc):
     _LOGGER.debug("ON CONNECT")
     if rc == mqtt.CONNACK_ACCEPTED:
@@ -105,6 +118,8 @@ def on_connect(the_client, userdata, flags, rc):
             isystem_to_mqtt.mqtt_discovery.temperature_number_configs(
                 base_topic, args.model)
             + isystem_to_mqtt.mqtt_discovery.program_select_configs(
+                base_topic, args.model)
+            + isystem_to_mqtt.mqtt_discovery.program_image_configs(
                 base_topic, args.model))
         for discovery_topic, discovery_payload in discovery_configs:
             result = the_client.publish(discovery_topic, discovery_payload, 1, True)
@@ -155,7 +170,30 @@ def read_zone(base_address, number_of_value):
                 address = base_address + index
                 tag_definition = READ_TABLE.get(address)
                 if tag_definition:
-                    tag_definition.publish(client, base_topic, raw_values, index)
+                    value = tag_definition.publish(
+                        client, base_topic, raw_values, index)
+                    image_definition = program_image_definitions.get(address)
+                    if image_definition:
+                        zone_id, zone_name = image_definition
+                        try:
+                            schedule = json.loads(value)
+                        except (TypeError, ValueError) as error:
+                            _LOGGER.error(
+                                "Invalid schedule for %s: %s",
+                                zone_id, error)
+                            continue
+                        image = isystem_to_mqtt.program_visualization.render_schedule_svg(
+                            schedule, zone_name, custom_css=custom_css)
+                        if image != last_program_images.get(zone_id):
+                            image_topic = base_topic + zone_id + "/program/image"
+                            result = client.publish(
+                                image_topic, image, retain=True)
+                            if result.rc != mqtt.MQTT_ERR_SUCCESS:
+                                _LOGGER.warning(
+                                    "Failed to publish program image to %s: %s",
+                                    image_topic, result.rc)
+                            else:
+                                last_program_images[zone_id] = image
             return
 
 def write_value(message):

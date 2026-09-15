@@ -91,3 +91,4 @@ ENV/
 .noseids
 
 _build
+isystem_to_mqtt/test/generated_program_images/

@@ -25,6 +25,7 @@ class TagDefinition(object):
             _LOGGER.debug("publish %s = %s", base_topic + self.tag_name, value)
             client.publish(base_topic + self.tag_name, value, retain=True)
             self.last_value = value
+        return value
 
     def print(self, raw_values, index):
         """ Print the converted value """

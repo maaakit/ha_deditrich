@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.7] - 2026-09-15
+
+### Added
+- Added SVG visualizations of the active weekly programs for zones A, B and C
+- Added Home Assistant MQTT Discovery `image` entities for the active zone programs
+- Added optional external CSS styling through the `custom_css_file` add-on option
+- Added test-generated schedule images for visual verification
+
+### Changed
+- Added polling of the Modbus schedule register block `126–230`
+- Program images are regenerated and published only when the active schedule changes
+- Documented supported SVG CSS classes and local add-on testing
+
 ## [0.1.6] - 2026-09-14
 
 ### Added
