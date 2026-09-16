@@ -37,6 +37,9 @@ directory, for example `/config/isystem2mqtt/program.css`. The file is
 embedded into generated SVG images. Only the documented renderer classes
 should be customized:
 
+If the configured file does not exist, the add-on logs a warning and uses the
+default styling.
+
 ```css
 .program-background {
   fill: #101820;
@@ -136,6 +139,32 @@ array of integers, for example `{"adr": 650, "val": [210, 220, 230]}`;
 the array is written to consecutive Modbus registers. All values must be
 between 0 and 65535. This topic bypasses the normal named-register
 validation; use it only for testing and with care.
+
+## External resources
+
+The following public resources describe similar De Dietrich Diematic/iSystem
+Modbus integrations and can help when investigating register behavior:
+
+- [Benoit3/Diematic_to_MQTT](https://github.com/Benoit3/Diematic_to_MQTT) —
+  independent MQTT integration for Diematic 3/iSystem.
+- [Diematic.py register definitions](https://raw.githubusercontent.com/Benoit3/Diematic_to_MQTT/main/src/Diematic.py) —
+  identifies the classic mode registers (`17` and `26`) and mode values such
+  as `AUTO=8`, `TEMP JOUR=36`, `TEMP NUIT=34`, `PERM JOUR=4`,
+  `PERM NUIT=2` and `ANTIGEL=1`.
+- [Diematic3Panel.py mode-write procedure](https://raw.githubusercontent.com/Benoit3/Diematic_to_MQTT/main/src/Diematic3Panel.py) —
+  documents the empirical repeated-write procedure used to refresh mode
+  changes on some controllers.
+- [Benoit3/Diematic](https://github.com/Benoit3/Diematic) —
+  earlier web interface for the same controller family, including notes about
+  Modbus limitations.
+- [Home Assistant community discussion](https://community.home-assistant.io/t/de-dietrich-diematic-modbus-to-mqtt-interface/363086) —
+  examples of monitoring and integrating Diematic boilers with Home Assistant.
+- [Fibaro forum discussion](https://www.domotique-fibaro.fr/topic/5677-de-dietrich-diematic-isystem/) —
+  additional community information about the Diematic iSystem interface.
+
+These resources are independent of this project and target related controller
+families. Always verify register addresses and write behavior on the specific
+boiler before enabling automatic control.
 
 ## Credits
 

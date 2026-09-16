@@ -5,23 +5,29 @@ from __future__ import division
 from __future__ import print_function
 
 import datetime
+import logging
 import os
 
 
+_LOGGER = logging.getLogger(__name__)
+
+
 DEFAULT_CSS = """
-.program-background { fill: #ffffff; }
-.program-grid { stroke: #e7e9ed; stroke-width: 1; }
-.program-row { stroke: #d9dce1; }
-.program-period { fill: #fbbc04; }
+.program-background { fill: #111111; }
+.program-grid { stroke: #292929; stroke-width: 1; }
+.program-row { stroke: #202020; }
+.program-row-even { fill: #0f0f0f; }
+.program-row-odd { fill: #111111; }
+.program-period { fill: #c8872a; stroke: #dfa044; stroke-width: 1; }
 .program-day-label {
-  fill: #202124;
+  fill: #eeeeee;
   font-family: sans-serif;
-  font-size: 14px;
+  font-size: 28px;
 }
 .program-time-label {
-  fill: #5f6368;
+  fill: #9a9ba5;
   font-family: sans-serif;
-  font-size: 12px;
+  font-size: 24px;
 }
 """
 MAX_CUSTOM_CSS_SIZE = 64 * 1024
@@ -31,7 +37,7 @@ DAY_NAMES = ("Monday", "Tuesday", "Wednesday", "Thursday",
 IMAGE_WIDTH = 1200
 IMAGE_HEIGHT = 390
 LEFT_MARGIN = 125
-RIGHT_MARGIN = 25
+RIGHT_MARGIN = 70
 TOP_MARGIN = 58
 ROW_HEIGHT = 40
 TIMELINE_WIDTH = IMAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN
@@ -46,8 +52,12 @@ def load_custom_css(path):
     """
     if not path:
         return ""
-    with open(path, "r") as css_file:
-        css = css_file.read()
+    try:
+        with open(path, "r") as css_file:
+            css = css_file.read()
+    except FileNotFoundError:
+        _LOGGER.warning("Custom CSS file not found: %s; using default CSS", path)
+        return ""
     if len(css) > MAX_CUSTOM_CSS_SIZE:
         raise ValueError("custom CSS file is larger than 64 KiB")
     lowered = css.lower()
@@ -111,10 +121,10 @@ def render_schedule_svg(schedule, zone_name, program_number=None,
             'class="program-day-label">{}</text>'.format(
                 LEFT_MARGIN - 12, y + ROW_HEIGHT / 2, DAY_NAMES[day]))
         parts.append(
-            '<rect class="program-row" x="{}" y="{}" width="{}" height="{}" '
-            'fill="{}"/>'.format(
+            '<rect class="program-row {}" x="{}" y="{}" width="{}" height="{}"/>'.format(
+                "program-row-even" if day % 2 == 0 else "program-row-odd",
                 LEFT_MARGIN, y, TIMELINE_WIDTH, ROW_HEIGHT,
-                "#f8f9fa" if day % 2 == 0 else "#ffffff"))
+            ))
 
         intervals = schedule.get(day, schedule.get(str(day), []))
         for interval in intervals:

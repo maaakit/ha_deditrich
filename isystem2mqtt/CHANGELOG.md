@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.11] - 2026-09-16
+
+### Changed
+- Darkened schedule rows, enlarged visualization text, and added right-side cell spacing
+
+## [0.1.10] - 2026-09-16
+
+### Changed
+- Updated schedule visualization colors for alternating rows and Graphite accent periods
+
+## [0.1.9] - 2026-09-16
+
+### Fixed
+- Missing optional custom CSS files no longer stop the add-on from starting
+
 ## [0.1.7] - 2026-09-15
 
 ### Added

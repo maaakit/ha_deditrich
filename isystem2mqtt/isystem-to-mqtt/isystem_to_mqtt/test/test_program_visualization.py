@@ -68,6 +68,9 @@ class TestProgramVisualization(unittest.TestCase):
             self.assertNotIn("Zone", image)
             self.assertIn(">04:00</text>", image)
             self.assertIn(">08:00</text>", image)
+            self.assertIn('class="program-row program-row-even"', image)
+            self.assertIn('class="program-row program-row-odd"', image)
+            self.assertIn('width="1005"', image)
             self.assertEqual(25, image.count('<line class="program-grid"'))
 
     def test_custom_css_file_is_embedded(self):
@@ -96,3 +99,9 @@ class TestProgramVisualization(unittest.TestCase):
                 program_visualization.load_custom_css(css_path)
         finally:
             os.unlink(css_path)
+
+    def test_missing_custom_css_file_uses_defaults(self):
+        css_path = os.path.join(tempfile.gettempdir(),
+                                "isystem2mqtt-missing-custom.css")
+        self.assertFalse(os.path.exists(css_path))
+        self.assertEqual("", program_visualization.load_custom_css(css_path))
