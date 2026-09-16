@@ -72,20 +72,47 @@ Data is published under the `heating/` topic prefix. Examples:
 
 The add-on also publishes Home Assistant MQTT Discovery configurations for
 slider entities controlling the day and night target temperatures of zone A,
-zone B and DHW, plus `select` entities for choosing programs P1 through P4
-for zone A and zone B. The program selectors use the existing
-`heating/zone-a/program/SET` and `heating/zone-b/program/SET` topics.
+zone B and DHW. The selected heating program is published for zone A, B and C,
+but program selection is read-only through Modbus. P1-P3 weekly schedules are
+not exposed by the iSystem Modbus interface; the available heating schedules
+are P4 for zones A, B and C.
 
-The add-on also publishes three `image` entities containing the currently
-active schedule for zones A, B and C:
+The add-on publishes the following weekly schedule topics:
+
+```text
+heating/zone-a/schedule-p4
+heating/zone-b/schedule-p4
+heating/zone-c/schedule-p4
+heating/dhw/schedule
+```
+
+The zone topics contain the stored P4 schedules. `heating/dhw/schedule`
+contains the domestic hot-water (DHW/CWU) schedule. These schedules are
+currently read-only in the add-on; no schedule-writing MQTT topic is
+implemented. Writing the DHW/CWU schedule has been observed to work on the
+tested installation, but it is not yet implemented or supported here.
+
+The add-on also publishes four `image` entities containing these schedules:
 
 ```text
 heating/zone-a/program/image
 heating/zone-b/program/image
 heating/zone-c/program/image
+heating/dhw/program/image
 ```
 
-The images are regenerated when the corresponding active schedule changes.
+The images are regenerated when the corresponding read schedule changes.
+
+The selected program topics are read-only status topics:
+
+```text
+heating/zone-a/program
+heating/zone-b/program
+heating/zone-c/program
+```
+
+Their values are numeric (`0` to `3`), corresponding to P1 through P4.
+The add-on does not use program selection to retrieve P1-P3 schedules.
 
 For diagnostic writes, publish a non-retained JSON message to
 `heating/diagnostic/write`, for example:

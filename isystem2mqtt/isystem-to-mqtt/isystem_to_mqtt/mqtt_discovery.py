@@ -91,11 +91,12 @@ def program_select_configs(base_topic, model):
 
 
 def program_image_configs(base_topic, model):
-    """Return MQTT Discovery configs for active program images."""
+    """Return MQTT Discovery configs for P4 program images."""
     definitions = (
-        ("zone_a", "Zone A active program", "zone-a/program/image"),
-        ("zone_b", "Zone B active program", "zone-b/program/image"),
-        ("zone_c", "Zone C active program", "zone-c/program/image"),
+        ("zone_a", "Zone A program P4", "zone-a/program/image"),
+        ("zone_b", "Zone B program P4", "zone-b/program/image"),
+        ("zone_c", "Zone C program P4", "zone-c/program/image"),
+        ("dhw", "DHW schedule", "dhw/program/image"),
     )
     device = {
         "identifiers": ["isystem2mqtt"],

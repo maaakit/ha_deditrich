@@ -110,7 +110,7 @@ class TestGetTablesTranslated(unittest.TestCase):
         """ Test Home Assistant active program image discovery configuration """
         configs = mqtt_discovery.program_image_configs("heating/", "modulens-g")
 
-        self.assertEqual(len(configs), 3)
+        self.assertEqual(len(configs), 4)
         discovery_topics = [topic for topic, _ in configs]
         self.assertEqual(
             discovery_topics,
@@ -118,6 +118,7 @@ class TestGetTablesTranslated(unittest.TestCase):
                 "homeassistant/image/isystem2mqtt_zone_a_program_image/config",
                 "homeassistant/image/isystem2mqtt_zone_b_program_image/config",
                 "homeassistant/image/isystem2mqtt_zone_c_program_image/config",
+                "homeassistant/image/isystem2mqtt_dhw_program_image/config",
             ])
 
     def test_dhw_target_registers_are_polled(self):

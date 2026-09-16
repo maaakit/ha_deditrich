@@ -54,6 +54,26 @@ Variable READ_TABLE_MODULENS_O define topic exported to MQTT.
 
 Variable WRITE_TABLE_MODULENS_O define topic subcribed to send data to boiler.
 
+On Diematic iSystem, the Modbus interface exposes the stored weekly P4
+schedule for heating zones A, B and C. P1-P3 weekly schedules are not
+available through the exposed iSystem register map. The domestic hot-water
+(DHW/CWU) schedule is also available for reading. This project currently
+does not implement writing heating or DHW schedules. Writing the DHW/CWU
+schedule has been observed to work on the tested installation, but is not yet
+supported by this project.
+
+The schedule topics are:
+
+* ``heating/zone-a/schedule-p4``
+* ``heating/zone-b/schedule-p4``
+* ``heating/zone-c/schedule-p4``
+* ``heating/dhw/schedule``
+
+The selected program is published separately as a read-only value on
+``heating/zone-a/program``, ``heating/zone-b/program`` and
+``heating/zone-c/program``. Values ``0`` through ``3`` represent P1 through
+P4. Program selection is not changed by this project.
+
 Main topic are:
 
 =========================================== ======================================
@@ -66,6 +86,4 @@ heating/zone-a/day-target-temperature/SET   To set day mode target temperature
 heating/zone-a/night-target-temperature     Currect night mode target temperature
 heating/zone-a/night-target-temperature/SET To set night mode target temperature
 =========================================== ======================================
-
-
 

@@ -107,6 +107,7 @@ program_image_definitions = {
     126: ("zone-a", "Zone A"),
     147: ("zone-b", "Zone B"),
     168: ("zone-c", "Zone C"),
+    189: ("dhw", "DHW"),
 }
 last_program_images = {}
 
