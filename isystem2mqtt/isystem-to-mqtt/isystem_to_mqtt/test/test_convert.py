@@ -20,6 +20,22 @@ class TestConvertUnit(unittest.TestCase):
         self.assertEqual(12, value)
 
 
+class TestConvertDateTime(unittest.TestCase):
+    """Test boiler date-time write conversions."""
+
+    def test_time(self):
+        self.assertEqual([19, 54],
+                         convert.write_datetime_time("2026-09-16 19:54"))
+
+    def test_date(self):
+        self.assertEqual([16, 9, 26],
+                         convert.write_datetime_date("2026-09-16 19:54"))
+
+    def test_invalid_format(self):
+        with self.assertRaises(ValueError):
+            convert.write_datetime_time("16/09/2026 19:54")
+
+
 class TestConvertTenth(unittest.TestCase):
     """ Test tenth function """
 

@@ -2,7 +2,12 @@
 
 import sys
 
-from .tag_definition import TagDefinition, WriteTagDefinition, MultipleTagDefinition
+from .tag_definition import (
+    TagDefinition,
+    WriteTagDefinition,
+    MultipleTagDefinition,
+    MultipleWriteTagDefinition,
+)
 from . import convert
 
 
@@ -321,6 +326,10 @@ READ_TABLE_MODULENS_OG = {
 # Otherwise unexpected behavior occurs, e.g., on restarting the polling
 # service or rebooting the machine.
 WRITE_TABLE_MODULENS_O = {
+    "boiler/datetime/SET": MultipleWriteTagDefinition([
+        (679, convert.write_datetime_time),
+        (682, convert.write_datetime_date),
+    ]),
     # "zone-a/antifreeze-duration/SET": WriteTagDefinition(13, convert.write_unit),
     "zone-a/program/SET": WriteTagDefinition(231, convert.write_unit),
     "zone-a/mode-simple/SET": WriteTagDefinition(653, convert.write_derog_bit_simple),
@@ -369,8 +378,10 @@ ZONE_TABLE_MODULENS_G = [(3,  3),
 # Otherwise unexpected behavior occurs, e.g., on restarting the polling
 # service or rebooting the machine.
 WRITE_TABLE_MODULENS_G = {
-    "boiler/time-hours/SET": WriteTagDefinition(4, convert.write_unit),
-    "boiler/time-minutes/SET": WriteTagDefinition(5, convert.write_unit),
+    "boiler/datetime/SET": MultipleWriteTagDefinition([
+        (4, convert.write_datetime_time),
+        (108, convert.write_datetime_date),
+    ]),
     "boiler/language/SET": WriteTagDefinition(263, convert.write_language),
     "boiler/language-raw/SET": WriteTagDefinition(263, convert.write_unit),
     "zone-a/program/SET": WriteTagDefinition(231, convert.write_unit),

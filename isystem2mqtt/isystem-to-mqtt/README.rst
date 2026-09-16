@@ -74,6 +74,11 @@ The selected program is published separately as a read-only value on
 ``heating/zone-c/program``. Values ``0`` through ``3`` represent P1 through
 P4. Program selection is not changed by this project.
 
+To set the boiler date and time, publish a non-retained message in the
+``YYYY-MM-DD HH:MM`` format to ``heating/boiler/datetime/SET``. This replaces
+the separate hour and minute topics and writes both the clock and calendar
+registers for the configured boiler model.
+
 Main topic are:
 
 =========================================== ======================================
@@ -86,4 +91,3 @@ heating/zone-a/day-target-temperature/SET   To set day mode target temperature
 heating/zone-a/night-target-temperature     Currect night mode target temperature
 heating/zone-a/night-target-temperature/SET To set night mode target temperature
 =========================================== ======================================
-

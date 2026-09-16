@@ -65,3 +65,23 @@ class WriteTagDefinition(object):
     def __init__(self, address, convertion):
         self.address = address
         self.convertion = convertion
+
+    def write(self, instrument, string_value):
+        """Convert and write a value to the configured register."""
+        value = self.convertion(string_value)
+        if value is not None:
+            instrument.write_registers(self.address, value)
+
+
+class MultipleWriteTagDefinition(object):
+    """Define one logical value written to multiple register ranges."""
+
+    def __init__(self, definition_list):
+        self.definition_list = definition_list
+
+    def write(self, instrument, string_value):
+        """Convert and write each part of the logical value."""
+        for address, convertion in self.definition_list:
+            value = convertion(string_value)
+            if value is not None:
+                instrument.write_registers(address, value)

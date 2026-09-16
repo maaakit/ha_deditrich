@@ -824,6 +824,23 @@ def write_unit(value):
     return [int(value)]
 
 
+def _parse_datetime(value):
+    """Parse the MQTT date-time format used by the boiler clock API."""
+    return datetime.datetime.strptime(value.strip(), "%Y-%m-%d %H:%M")
+
+
+def write_datetime_time(value):
+    """Convert date-time input to boiler hour and minute registers."""
+    parsed = _parse_datetime(value)
+    return [parsed.hour, parsed.minute]
+
+
+def write_datetime_date(value):
+    """Convert date-time input to boiler day, month and year registers."""
+    parsed = _parse_datetime(value)
+    return [parsed.day, parsed.month, parsed.year % 100]
+
+
 def write_tenth(value):
     """ Convert tenth value to modbus value """
     int_value = int(float(value) * 10)

@@ -114,6 +114,16 @@ heating/zone-c/program
 Their values are numeric (`0` to `3`), corresponding to P1 through P4.
 The add-on does not use program selection to retrieve P1-P3 schedules.
 
+To set the boiler date and time, publish a non-retained message in the
+`YYYY-MM-DD HH:MM` format to:
+
+```text
+heating/boiler/datetime/SET
+```
+
+This replaces the separate time-hour and time-minute topics and writes both
+the clock and calendar registers for the configured boiler model.
+
 For diagnostic writes, publish a non-retained JSON message to
 `heating/diagnostic/write`, for example:
 

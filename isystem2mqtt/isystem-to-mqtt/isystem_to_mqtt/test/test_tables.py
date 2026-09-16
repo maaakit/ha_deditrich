@@ -80,6 +80,15 @@ class TestGetTablesTranslated(unittest.TestCase):
                 self.assertEqual(write_table[topic].address, address)
                 self.assertEqual(write_table[topic].convertion, convert.write_tenth)
 
+    def test_datetime_write_topic(self):
+        """Test the combined date-time write topic for both boiler models."""
+        for model in ("modulens-o", "modulens-g"):
+            _, write_table, _ = tables.get_tables_translated(model, "en")
+            definition = write_table["boiler/datetime/SET"]
+            self.assertTrue(hasattr(definition, "write"))
+            self.assertFalse("boiler/time-hours/SET" in write_table)
+            self.assertFalse("boiler/time-minutes/SET" in write_table)
+
     def test_temperature_number_discovery_configs(self):
         """ Test Home Assistant slider discovery configuration """
         configs = mqtt_discovery.temperature_number_configs("heating/", "modulens-o")

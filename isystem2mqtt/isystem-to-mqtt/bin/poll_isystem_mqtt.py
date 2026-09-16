@@ -203,12 +203,8 @@ def write_value(message):
     tag_definition = WRITE_TABLE.get(topic_name)
     if tag_definition:
         string_value = message.payload.decode("utf-8")
-        value = tag_definition.convertion(string_value)
-        _LOGGER.debug("write value %s : %s => address : %s = %s",
-                      message.topic.strip(base_topic), string_value,
-                      tag_definition.address, value)
-        if value is not None:
-            instrument.write_registers(tag_definition.address, value)
+        _LOGGER.debug("write value %s : %s", topic_name, string_value)
+        tag_definition.write(instrument, string_value)
 
 
 def write_diagnostic_value(message):
