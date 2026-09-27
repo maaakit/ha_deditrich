@@ -21,6 +21,7 @@ import paho.mqtt.client as mqtt
 import isystem_to_mqtt.tables
 import isystem_to_mqtt.isystem_modbus
 import isystem_to_mqtt.mqtt_discovery
+import isystem_to_mqtt.modbus_write
 import isystem_to_mqtt.program_visualization
 
 parser = argparse.ArgumentParser()
@@ -261,9 +262,15 @@ while True:
 
             instrument.wait_time_slot()
             if writeelement.topic == diagnostic_write_topic:
-                write_diagnostic_value(writeelement)
+                isystem_to_mqtt.modbus_write.write_with_retries(
+                    instrument,
+                    lambda: write_diagnostic_value(writeelement),
+                    "Diagnostic write")
             else:
-                write_value(writeelement)
+                isystem_to_mqtt.modbus_write.write_with_retries(
+                    instrument,
+                    lambda: write_value(writeelement),
+                    "MQTT write to %s" % writeelement.topic)
             waittime = 0
     except queue.Empty:
         # no more write, continue to read.

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.13] - 2026-09-27
+
+### Fixed
+- Modbus write failures are retried up to two times and no longer stop the add-on
+
+### Tests
+- Added tests for retry success, exhausted retries, and non-transient write errors
+
 ## [0.1.12] - 2026-09-27
 
 ### Changed
