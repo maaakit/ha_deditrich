@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.12] - 2026-09-27
+
+### Changed
+- Automatically map host UART/serial devices into the add-on container
+
 ## [0.1.11] - 2026-09-16
 
 ### Changed
