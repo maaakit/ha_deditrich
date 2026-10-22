@@ -30,7 +30,15 @@ Communication with the boiler uses **Modbus RS485** via a USB-RS485 adapter (e.g
 | `serial` | `/dev/ttyUSB0` | Serial device path |
 | `device_id` | `10` | Modbus device ID |
 | `log_level` | `INFO` | Log level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+| `persistent_logging` | `false` | Write add-on logs to daily ZIP archives under `/share/isystem2mqtt/` |
+| `log_retention_days` | `7` | Number of rotated daily ZIP archives to retain when persistent logging is enabled |
 | `custom_css_file` | `` | Optional CSS file used to style generated program SVG images |
+
+When `persistent_logging` is enabled, the active log is written to
+`/share/isystem2mqtt/isystem2mqtt.log`; rotated daily archives are ZIP files in
+the same directory. The retention setting limits the number of archived days;
+the active log is additional. Logs continue to appear in the add-on's normal
+Supervisor log view.
 
 The optional `custom_css_file` path is read from the Home Assistant `/config`
 directory, for example `/config/isystem2mqtt/program.css`. The file is

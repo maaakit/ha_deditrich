@@ -37,6 +37,12 @@ parser.add_argument("--deviceid", help="Modbus device id, default 10",
                     type=int, default=10)
 parser.add_argument("--log", help="Logging level, default INFO",
                     default="INFO")
+parser.add_argument("--persistent-logging",
+                    help="write daily rotated log archives under /share",
+                    action="store_true")
+parser.add_argument("--log-retention-days",
+                    help="number of rotated daily log archives to retain",
+                    type=int, default=7)
 parser.add_argument("--bimaster", help="bi-master mode (5s for peer, 5s for us)",
                     action="store_true")
 parser.add_argument("--model", help="boiler model",
@@ -66,6 +72,14 @@ logging.basicConfig(level=numeric_level,
                     datefmt="%H:%M:%S")
 
 _LOGGER = logging.getLogger(__name__)
+
+if args.persistent_logging:
+    from isystem_to_mqtt.logging_config import add_persistent_file_handler
+
+    add_persistent_file_handler(
+        logging.getLogger(),
+        "/share/isystem2mqtt",
+        args.log_retention_days)
 
 
 (READ_TABLE, WRITE_TABLE, READ_ZONES) = isystem_to_mqtt.tables.get_tables_translated(args.model, args.lang)

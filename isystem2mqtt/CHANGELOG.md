@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.14] - 2026-10-22
+
+### Added
+- Optional persistent daily log files under `/share/isystem2mqtt/`
+- ZIP compression for rotated logs and configurable archive retention (default 7 days)
+
 ## [0.1.13] - 2026-09-27
 
 ### Fixed
